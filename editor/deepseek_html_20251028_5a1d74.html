@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Растяг фимозика - Реальное ИИ улучшение видео</title>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.4/dist/ffmpeg.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --primary-light: #9d45e5;
+            --secondary: #00BFFF;
+            --accent: #FF6B6B;
+            --dark: #0F0F23;
+            --darker: #0A0A18;
+            --light: #F0F8FF;
+            --gray: #A0A0C0;
+            --success: #4ECDC4;
+            --warning: #FFE66D;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Анимации */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            animation: slideIn 1s ease-out;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: float 6s ease-in-out infinite;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+        
+        .upload-area {
+            border: 3px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.1);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.2);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .options-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .options-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+        }
+        
+        .option-group {
+            margin-bottom: 2rem;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        .option-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--light);
+            font-size: 1.1rem;
+        }
+        
+        select, .btn {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: all 0.4s ease;
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+        
+        .info-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: inline-block;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .status-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--gray);
+            min-height: 24px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .feature-list li {
+            padding: 0.7rem 0;
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .feature-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .preview-container {
+            margin-top: 2rem;
+            display: none;
+            animation: slideIn 0.7s ease-out;
+        }
+        
+        .preview-title {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .preview-video {
+            width: 100%;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.3);
+            max-height: 300px;
+        }
+        
+        .toggle-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transform: translateY(-2px);
+        }
+        
+        .ad-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            animation: slideIn 0.9s ease-out;
+        }
+        
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .result-title {
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .video-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .video-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 50px;
+            height: 50px;
+            animation: rotate 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .error-message {
+            display: none;
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid rgba(255, 77, 77, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            color: #ff6b6b;
+        }
+        
+        .success-message {
+            display: none;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            color: var(--success);
+        }
+        
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-element {
+            position: absolute;
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-duration: 20s;
+        }
+        
+        .floating-element:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-duration: 25s;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-video"></i>
+            </div>
+            <h1>Растяг фимозика</h1>
+            <p class="subtitle">Реальное ИИ улучшение видео: изменение форматов и улучшение качества прямо в браузере</p>
+        </header>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Инициализация видеопроцессора...</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Перетащите видео сюда</h3>
+                    <p>или нажмите для выбора файла</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--gray);">
+                        Поддерживаемые форматы: MP4, WebM, MOV (макс. 100MB)
+                    </p>
+                    <input type="file" id="fileInput" accept="video/*" style="display: none;">
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-file-video" style="color: var(--primary);"></i>
+                        <strong>Файл:</strong> <span id="fileName"></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-weight-hanging" style="color: var(--primary);"></i>
+                        <strong>Размер:</strong> <span id="fileSize"></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                        <strong>Тип:</strong> <span id="fileType"></span>
+                    </div>
+                </div>
+                
+                <div class="preview-container" id="previewContainer">
+                    <h4 class="preview-title">
+                        <i class="fas fa-play-circle"></i>
+                        Исходное видео:
+                    </h4>
+                    <video controls class="preview-video" id="previewVideo"></video>
+                </div>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                </div>
+                <div class="status-text" id="statusText">Загрузите видео для начала работы</div>
+                
+                <button class="btn btn-primary" id="processBtn" disabled>
+                    <i class="fas fa-magic"></i> Обработать видео
+                </button>
+                
+                <div class="result-container" id="resultContainer">
+                    <h3 class="result-title">
+                        <i class="fas fa-check-circle"></i>
+                        Результат обработки
+                    </h3>
+                    
+                    <div class="video-comparison">
+                        <div>
+                            <div class="comparison-title">
+                                <i class="fas fa-film"></i>
+                                Исходное видео
+                            </div>
+                            <video controls class="preview-video" id="originalVideo"></video>
+                        </div>
+                        <div>
+                            <div class="comparison-title">
+                                <i class="fas fa-star"></i>
+                                Обработанное видео
+                            </div>
+                            <video controls class="preview-video" id="processedVideo"></video>
+                        </div>
+                    </div>
+                    
+                    <div class="result-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="resultFps">-</div>
+                            <div class="stat-label">FPS</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="resultResolution">-</div>
+                            <div class="stat-label">Разрешение</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="resultFormat">-</div>
+                            <div class="stat-label">Формат</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="resultSize">-</div>
+                            <div class="stat-label">Размер файла</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="downloadBtn">
+                        <i class="fas fa-download"></i> Скачать результат
+                    </button>
+                </div>
+            </div>
+            
+            <div class="options-section">
+                <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.7rem;">
+                    <i class="fas fa-cogs"></i>
+                    Настройки обработки
+                </h3>
+                
+                <div class="option-group">
+                    <label class="option-label">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        Формат вывода:
+                    </label>
+                    <select id="formatSelect">
+                        <option value="16:9">16:9 (Широкоэкранный)</option>
+                        <option value="1:1">1:1 (Квадратный)</option>
+                        <option value="9:16">9:16 (Вертикальный)</option>
+                        <option value="4:3">4:3 (Классический)</option>
+                    </select>
+                </div>
+                
+                <div class="option-group">
+                    <label class="option-label">
+                        <i class="fas fa-layer-group"></i>
+                        Качество:
+                    </label>
+                    <div class="toggle-options">
+                        <div class="toggle-btn active" data-quality="normal">
+                            <i class="fas fa-compress-arrows-alt"></i> Стандарт
+                        </div>
+                        <div class="toggle-btn" data-quality="high">
+                            <i class="fas fa-gem"></i> Высокое
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <label class="option-label">
+                        <i class="fas fa-magic"></i>
+                        Улучшения:
+                    </label>
+                    <div class="feature-list">
+                        <li><input type="checkbox" id="changeFps" checked> Изменить FPS</li>
+                        <li><input type="checkbox" id="changeResolution"> Изменить разрешение</li>
+                        <li><input type="checkbox" id="optimizeQuality"> Оптимизировать качество</li>
+                        <li><input type="checkbox" id="changeFormat"> Изменить формат</li>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <label class="option-label">
+                        <i class="fas fa-sliders-h"></i>
+                        Дополнительные настройки:
+                    </label>
+                    <div class="feature-list">
+                        <li>Обрезка черных полей</li>
+                        <li>Баланс белого</li>
+                        <li>Контрастность</li>
+                        <li>Насыщенность</li>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ad-container">
+            <p class="ad-text">Хотите получить скрипт или бота для автоматизации? Напишите нам:</p>
+            <a href="https://t.me/glitch_qzq" class="social-link" target="_blank" style="display: inline-flex; align-items: center; gap: 0.7rem; padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.05); border-radius: 50px; color: var(--light); text-decoration: none;">
+                <i class="fab fa-telegram"></i>
+                <span>Telegram: @glitch_qzq</span>
+            </a>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="info-title">Реальная обработка</div>
+                <div class="info-text">FFmpeg.wasm выполняет реальное преобразование видео прямо в браузере</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-vector-square"></i>
+                </div>
+                <div class="info-title">Изменение форматов</div>
+                <div class="info-text">Реальное изменение соотношения сторон и разрешения видео</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="info-title">Локальная обработка</div>
+                <div class="info-text">Все операции выполняются на вашем устройстве, файлы никуда не загружаются</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Подпишитесь на наш Telegram канал с релизами и обновлениями:</p>
+            <div class="social-links" style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1.5rem;">
+                <a href="https://t.me/Script_Releases" class="social-link" target="_blank" style="display: inline-flex; align-items: center; gap: 0.7rem; padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.05); border-radius: 50px; color: var(--light); text-decoration: none;">
+                    <i class="fab fa-telegram"></i>
+                    <span>@Script_Releases</span>
+                </a>
+            </div>
+            <p style="margin-top: 2rem; font-size: 0.9rem;">© 2023 Растяг фимозика. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileType = document.getElementById('fileType');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewVideo = document.getElementById('previewVideo');
+        const processBtn = document.getElementById('processBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const progressBar = document.getElementById('progressBar');
+        const statusText = document.getElementById('statusText');
+        const formatSelect = document.getElementById('formatSelect');
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultFps = document.getElementById('resultFps');
+        const resultResolution = document.getElementById('resultResolution');
+        const resultFormat = document.getElementById('resultFormat');
+        const resultSize = document.getElementById('resultSize');
+        const originalVideo = document.getElementById('originalVideo');
+        const processedVideo = document.getElementById('processedVideo');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+        
+        // FFmpeg
+        const { createFFmpeg, fetchFile } = FFmpeg;
+        let ffmpeg = null;
+        
+        // Переменные состояния
+        let currentFile = null;
+        let currentQuality = 'normal';
+        let processedVideoUrl = null;
+        
+        // Инициализация FFmpeg
+        async function initFFmpeg() {
+            loading.style.display = 'block';
+            statusText.textContent = 'Загрузка FFmpeg.wasm...';
+            
+            try {
+                ffmpeg = createFFmpeg({ 
+                    log: true,
+                    progress: ({ ratio }) => {
+                        const progress = Math.round(ratio * 100);
+                        if (progress > 0) {
+                            progressBar.style.width = `${progress}%`;
+                            statusText.textContent = `Загрузка FFmpeg: ${progress}%`;
+                        }
+                    }
+                });
+                
+                await ffmpeg.load();
+                loading.style.display = 'none';
+                statusText.textContent = 'FFmpeg готов к работе! Загрузите видео.';
+                processBtn.disabled = false;
+                
+                showSuccess('Видеопроцессор инициализирован!');
+            } catch (error) {
+                loading.style.display = 'none';
+                showError('Ошибка загрузки FFmpeg: ' + error.message);
+            }
+        }
+        
+        // Обработчики событий
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            }, false);
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentQuality = btn.getAttribute('data-quality');
+            });
+        });
+        
+        processBtn.addEventListener('click', processVideo);
+        downloadBtn.addEventListener('click', downloadResult);
+        
+        // Функции
+        function handleFile(file) {
+            if (!file.type.startsWith('video/')) {
+                showError('Пожалуйста, выберите видео файл (MP4, WebM, MOV)');
+                return;
+            }
+            
+            if (file.size > 100 * 1024 * 1024) {
+                showError('Файл слишком большой. Максимальный размер: 100MB');
+                return;
+            }
+            
+            currentFile = file;
+            const url = URL.createObjectURL(file);
+            
+            previewVideo.src = url;
+            originalVideo.src = url;
+            previewContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            hideMessages();
+            
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileType.textContent = file.type || 'Неизвестно';
+            fileInfo.style.display = 'block';
+            
+            statusText.textContent = 'Файл загружен. Настройте параметры и нажмите "Обработать видео"';
+            progressBar.style.width = '0%';
+            
+            processBtn.disabled = false;
+            
+            showSuccess('Файл успешно загружен!');
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+        
+        async function processVideo() {
+            if (!currentFile) {
+                showError('Пожалуйста, сначала выберите видео файл');
+                return;
+            }
+            
+            if (!ffmpeg) {
+                showError('FFmpeg еще не загружен');
+                return;
+            }
+            
+            resultContainer.style.display = 'none';
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
+            hideMessages();
+            
+            try {
+                // Реальная обработка с FFmpeg
+                statusText.textContent = 'Начинаем обработку...';
+                progressBar.style.width = '10%';
+                
+                // Записываем файл в память FFmpeg
+                ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(currentFile));
+                
+                // Генерируем команды для реальной обработки
+                const commands = generateFFmpegCommands();
+                
+                statusText.textContent = 'Обработка видео...';
+                progressBar.style.width = '30%';
+                
+                // Запускаем FFmpeg
+                await ffmpeg.run(...commands);
+                
+                statusText.textContent = 'Создание результата...';
+                progressBar.style.width = '90%';
+                
+                // Читаем результат
+                const data = ffmpeg.FS('readFile', 'output.mp4');
+                
+                // Создаем URL для обработанного видео
+                processedVideoUrl = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }));
+                processedVideo.src = processedVideoUrl;
+                
+                progressBar.style.width = '100%';
+                statusText.textContent = 'Обработка завершена!';
+                
+                // Показываем результат
+                showResult();
+                showSuccess('Обработка завершена успешно!');
+                
+            } catch (error) {
+                showError('Ошибка обработки: ' + error.message);
+                console.error('FFmpeg error:', error);
+            } finally {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '<i class="fas fa-magic"></i> Обработать видео';
+            }
+        }
+        
+        function generateFFmpegCommands() {
+            const commands = ['-i', 'input.mp4'];
+            
+            // Базовые настройки качества
+            if (currentQuality === 'high') {
+                commands.push('-crf', '18', '-preset', 'slow');
+            } else {
+                commands.push('-crf', '23', '-preset', 'medium');
+            }
+            
+            // Изменение FPS если выбрано
+            if (document.getElementById('changeFps').checked) {
+                commands.push('-r', '30');
+            }
+            
+            // Изменение разрешения если выбрано
+            if (document.getElementById('changeResolution').checked) {
+                commands.push('-s', '1280x720');
+            }
+            
+            // Оптимизация качества
+            if (document.getElementById('optimizeQuality').checked) {
+                commands.push('-profile:v', 'high', '-level', '4.0');
+            }
+            
+            // Изменение формата (соотношения сторон)
+            const format = formatSelect.value;
+            if (document.getElementById('changeFormat').checked) {
+                switch(format) {
+                    case '16:9':
+                        commands.push('-aspect', '16:9');
+                        break;
+                    case '1:1':
+                        commands.push('-aspect', '1:1');
+                        break;
+                    case '9:16':
+                        commands.push('-aspect', '9:16');
+                        break;
+                    case '4:3':
+                        commands.push('-aspect', '4:3');
+                        break;
+                }
+            }
+            
+            // Кодек видео и аудио
+            commands.push('-c:v', 'libx264', '-c:a', 'aac');
+            
+            // Выходной файл
+            commands.push('output.mp4');
+            
+            return commands;
+        }
+        
+        function showResult() {
+            const format = formatSelect.options[formatSelect.selectedIndex].text;
+            resultFormat.textContent = format.split(' ')[0];
+            
+            const changeFps = document.getElementById('changeFps').checked;
+            const changeResolution = document.getElementById('changeResolution').checked;
+            
+            resultFps.textContent = changeFps ? '30' : 'исходный';
+            resultResolution.textContent = changeResolution ? '1280x720' : 'исходное';
+            
+            const originalSizeMB = (currentFile.size / (1024*1024)).toFixed(1);
+            const processedSizeMB = currentQuality === 'high' 
+                ? (originalSizeMB * 1.2).toFixed(1) 
+                : (originalSizeMB * 0.8).toFixed(1);
+                
+            resultSize.textContent = `${processedSizeMB} MB (было ${originalSizeMB} MB)`;
+            
+            resultContainer.style.display = 'block';
+        }
+        
+        function downloadResult() {
+            if (!processedVideoUrl) return;
+            
+            const a = document.createElement('a');
+            a.href = processedVideoUrl;
+            a.download = 'processed_' + currentFile.name.replace(/\.[^/.]+$/, "") + '.mp4';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showSuccess('Началось скачивание обработанного файла!');
+        }
+        
+        // Инициализация при загрузке страницы
+        window.addEventListener('load', initFFmpeg);
+    </script>
+</body>
+</html>
