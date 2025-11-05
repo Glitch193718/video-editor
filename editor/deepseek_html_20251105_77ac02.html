@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Editor - Космический видеоредактор</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Анимированный космический фон -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    <div class="nebulae"></div>
+    
+    <!-- Панель настроек бэкенда -->
+    <div class="backend-panel" id="backendPanel">
+        <div class="backend-config">
+            <h3><i class="fas fa-server"></i> Настройки сервера</h3>
+            <div class="config-inputs">
+                <div class="input-group">
+                    <label for="backendUrl">URL бэкенда:</label>
+                    <input type="text" id="backendUrl" placeholder="https://ваш-сервер.com/api" value="http://localhost:5000">
+                </div>
+                <div class="input-group">
+                    <label for="apiKey">API ключ (если есть):</label>
+                    <input type="text" id="apiKey" placeholder="Ваш API ключ">
+                </div>
+            </div>
+            <div class="config-buttons">
+                <button class="btn-test" id="testConnectionBtn">
+                    <i class="fas fa-plug"></i> Проверить подключение
+                </button>
+                <button class="btn-save" id="saveConfigBtn">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+            </div>
+            <div class="connection-status" id="connectionStatus"></div>
+        </div>
+        <button class="btn-toggle-config" id="toggleConfigBtn">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="container">
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-stars"></i>
+                <h1>Nebula Editor</h1>
+            </div>
+            <p class="tagline">Космический видеоредактор нового поколения</p>
+        </header>
+
+        <!-- Главный экран -->
+        <main class="main-content">
+            <!-- Панель загрузки -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Загрузите видео</h3>
+                    <p>Перетащите файл сюда или нажмите для выбора</p>
+                    <input type="file" id="fileInput" accept="video/*" hidden>
+                    <button class="btn-primary" id="selectFileBtn">Выбрать файл</button>
+                </div>
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <div class="file-details">
+                        <i class="fas fa-file-video"></i>
+                        <div class="file-text">
+                            <h4 id="fileName">video.mp4</h4>
+                            <p id="fileSize">0 MB</p>
+                            <p id="fileResolution">0x0</p>
+                            <p id="fileDuration">0s</p>
+                        </div>
+                        <button class="btn-remove" id="removeFileBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="video-preview" id="videoPreview"></div>
+                </div>
+            </section>
+
+            <!-- Панель выборов и настроек -->
+            <section class="choices-section" id="choicesSection" style="display: none;">
+                <h2>Выберите тип обработки</h2>
+                
+                <!-- Основные выборы -->
+                <div class="choice-cards">
+                    <div class="choice-card" data-choice="stretch">
+                        <div class="choice-icon">
+                            <i class="fas fa-expand-alt"></i>
+                        </div>
+                        <h3>Растяжка видео</h3>
+                        <p>Измените формат видео под нужные пропорции</p>
+                        <div class="choice-features">
+                            <span>7 форматов</span>
+                            <span>Высокое качество</span>
+                            <span>Быстрая обработка</span>
+                        </div>
+                    </div>
+
+                    <div class="choice-card" data-choice="enhance">
+                        <div class="choice-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3>Улучшение качества</h3>
+                        <p>Улучшите разрешение и качество видео</p>
+                        <div class="choice-features">
+                            <span>До 4K</span>
+                            <span>ИИ-улучшение</span>
+                            <span>Оптимизация</span>
+                        </div>
+                    </div>
+
+                    <div class="choice-card" data-choice="interpolate">
+                        <div class="choice-icon">
+                            <i class="fas fa-forward"></i>
+                        </div>
+                        <h3>Интерполяция кадров</h3>
+                        <p>Увеличьте плавность видео</p>
+                        <div class="choice-features">
+                            <span>До 120 FPS</span>
+                            <span>ИИ-алгоритмы</span>
+                            <span>Плавное движение</span>
+                        </div>
+                    </div>
+
+                    <div class="choice-card" data-choice="advanced">
+                        <div class="choice-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>Продвинутая обработка</h3>
+                        <p>Комплексное улучшение с ИИ</p>
+                        <div class="choice-features">
+                            <span>Все функции</span>
+                            <span>Нейросети</span>
+                            <span>Макс. качество</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Детальные настройки -->
+            <section class="settings-section" id="settingsSection" style="display: none;">
+                <div class="settings-header">
+                    <h2 id="settingsTitle">Настройки обработки</h2>
+                    <button class="btn-back" id="backToChoicesBtn">
+                        <i class="fas fa-arrow-left"></i> Назад к выборам
+                    </button>
+                </div>
+                
+                <!-- Настройки для растяжки -->
+                <div class="settings-group stretch-settings">
+                    <h3>Формат видео</h3>
+                    <div class="format-buttons">
+                        <button class="format-btn active" data-format="1x1">
+                            <span>1:1</span>
+                            <small>1080×1080</small>
+                            <div class="format-preview">▢</div>
+                        </button>
+                        <button class="format-btn" data-format="9x16">
+                            <span>9:16</span>
+                            <small>1080×1920</small>
+                            <div class="format-preview">▮</div>
+                        </button>
+                        <button class="format-btn" data-format="16x9">
+                            <span>16:9</span>
+                            <small>1920×1080</small>
+                            <div class="format-preview">▯</div>
+                        </button>
+                        <button class="format-btn" data-format="4x5">
+                            <span>4:5</span>
+                            <small>1080×1350</small>
+                            <div class="format-preview">▭</div>
+                        </button>
+                        <button class="format-btn" data-format="1x2">
+                            <span>1:2</span>
+                            <small>1080×2160</small>
+                            <div class="format-preview">█</div>
+                        </button>
+                        <button class="format-btn" data-format="2x1">
+                            <span>2:1</span>
+                            <small>2160×1080</small>
+                            <div class="format-preview">▀</div>
+                        </button>
+                        <button class="format-btn" data-format="21x9">
+                            <span>21:9</span>
+                            <small>2560×1080</small>
+                            <div class="format-preview">▁</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Настройки качества -->
+                <div class="settings-group">
+                    <h3>Режим качества</h3>
+                    <div class="quality-buttons">
+                        <button class="quality-btn active" data-quality="lossless">
+                            <i class="fas fa-gem"></i>
+                            <span>Без сжатия</span>
+                            <small>Максимальное качество</small>
+                            <div class="quality-badge">Лучшее</div>
+                        </button>
+                        <button class="quality-btn" data-quality="compressed">
+                            <i class="fas fa-compress-alt"></i>
+                            <span>Сжатие</span>
+                            <small>Оптимальный баланс</small>
+                            <div class="quality-badge">Популярное</div>
+                        </button>
+                        <button class="quality-btn" data-quality="ai_enhanced">
+                            <i class="fas fa-robot"></i>
+                            <span>ИИ-улучшение</span>
+                            <small>Нейросети</small>
+                            <div class="quality-badge">Премиум</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Дополнительные улучшения -->
+                <div class="settings-group enhancement-settings">
+                    <h3>Дополнительные улучшения</h3>
+                    <div class="enhancement-grid">
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="4k">
+                            <div class="checkbox-content">
+                                <i class="fas fa-expand-alt"></i>
+                                <div class="checkbox-text">
+                                    <span>4K Enhance</span>
+                                    <small>Улучшение до 4K разрешения</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="120fps">
+                            <div class="checkbox-content">
+                                <i class="fas fa-forward"></i>
+                                <div class="checkbox-text">
+                                    <span>120 FPS</span>
+                                    <small>Интерполяция до 120 кадров/с</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="ai_enhance">
+                            <div class="checkbox-content">
+                                <i class="fas fa-brain"></i>
+                                <div class="checkbox-text">
+                                    <span>AI Enhance</span>
+                                    <small>Нейросетевое улучшение качества</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="ai_interpolate">
+                            <div class="checkbox-content">
+                                <i class="fas fa-bolt"></i>
+                                <div class="checkbox-text">
+                                    <span>AI Interpolate</span>
+                                    <small>ИИ-интерполяция кадров</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="stabilization">
+                            <div class="checkbox-content">
+                                <i class="fas fa-shield-alt"></i>
+                                <div class="checkbox-text">
+                                    <span>Стабилизация</span>
+                                    <small>Устранение дрожания камеры</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="enhancement-checkbox">
+                            <input type="checkbox" data-enhancement="color_correction">
+                            <div class="checkbox-content">
+                                <i class="fas fa-palette"></i>
+                                <div class="checkbox-text">
+                                    <span>Коррекция цвета</span>
+                                    <small>Автоматическая коррекция цветов</small>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Предпросмотр настроек -->
+                <div class="settings-preview">
+                    <h3>Предпросмотр настроек</h3>
+                    <div class="preview-content">
+                        <div class="preview-item">
+                            <span class="preview-label">Тип обработки:</span>
+                            <span class="preview-value" id="previewType">Растяжка видео</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Формат:</span>
+                            <span class="preview-value" id="previewFormat">1:1 (1080×1080)</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Качество:</span>
+                            <span class="preview-value" id="previewQuality">Без сжатия</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Улучшения:</span>
+                            <span class="preview-value" id="previewEnhancements">Нет</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопка обработки -->
+                <div class="process-section">
+                    <button class="btn-process" id="processBtn">
+                        <i class="fas fa-rocket"></i>
+                        <span>Запустить обработку</span>
+                        <div class="process-badge" id="processEstimate">~ 1-2 мин</div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Прогресс обработки -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h2>Обработка видео</h2>
+                        <div class="progress-stats">
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-stages">
+                        <div class="stage active" data-stage="upload">
+                            <div class="stage-icon">1</div>
+                            <span>Загрузка</span>
+                        </div>
+                        <div class="stage" data-stage="process">
+                            <div class="stage-icon">2</div>
+                            <span>Обработка</span>
+                        </div>
+                        <div class="stage" data-stage="enhance">
+                            <div class="stage-icon">3</div>
+                            <span>Улучшение</span>
+                        </div>
+                        <div class="stage" data-stage="finalize">
+                            <div class="stage-icon">4</div>
+                            <span>Финальная сборка</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    
+                    <div class="progress-info">
+                        <p id="progressStatus">Подготовка к обработке...</p>
+                        <p id="progressDetails">Ожидание запуска...</p>
+                    </div>
+                    
+                    <div class="progress-animation">
+                        <div class="spaceship">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="stars-animated"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Результат -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <div class="result-container">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h2>Обработка завершена!</h2>
+                        <p>Ваше видео успешно обработано</p>
+                    </div>
+                    
+                    <div class="result-content">
+                        <div class="result-video" id="resultVideo"></div>
+                        <div class="result-info">
+                            <h3>Информация о результате</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Размер файла:</span>
+                                    <span class="info-value" id="resultSize">0 MB</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Разрешение:</span>
+                                    <span class="info-value" id="resultResolution">0x0</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Длительность:</span>
+                                    <span class="info-value" id="resultDuration">0s</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Формат:</span>
+                                    <span class="info-value" id="resultFormat">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Качество:</span>
+                                    <span class="info-value" id="resultQuality">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Время обработки:</span>
+                                    <span class="info-value" id="resultTime">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-actions">
+                        <button class="btn-download" id="downloadBtn">
+                            <i class="fas fa-download"></i>
+                            Скачать результат
+                        </button>
+                        <button class="btn-share" id="shareBtn">
+                            <i class="fas fa-share"></i>
+                            Поделиться
+                        </button>
+                        <button class="btn-new" id="newProcessBtn">
+                            <i class="fas fa-redo"></i>
+                            Новое видео
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Реклама и информация -->
+        <aside class="advertisement">
+            <div class="ad-card">
+                <div class="ad-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h3>Хотите такой же сайт?</h3>
+                <p>Закажите разработку у нас! Полностью настроим под ваши нужды.</p>
+                <a href="https://t.me/glitch_qzq" class="btn-telegram" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Написать в Telegram
+                </a>
+            </div>
+            <div class="ad-card">
+                <div class="ad-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Новые релизы</h3>
+                <p>Следите за обновлениями и новыми функциями</p>
+                <a href="https://t.me/Script_Releases" class="btn-channel" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Подписаться на канал
+                </a>
+            </div>
+            <div class="ad-card">
+                <div class="ad-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Nebula Pro</h3>
+                <p>Расширенная версия с дополнительными функциями</p>
+                <button class="btn-pro" id="proInfoBtn">
+                    <i class="fas fa-crown"></i>
+                    Узнать больше
+                </button>
+            </div>
+        </aside>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-stars"></i>
+                    <span>Nebula Editor</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#">О проекте</a>
+                    <a href="#">Документация</a>
+                    <a href="#">Контакты</a>
+                </div>
+                <div class="footer-social">
+                    <span>Следите за нами:</span>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <p class="footer-copyright">&copy; 2023 Nebula Editor. Вселенная видеомонтажа.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
