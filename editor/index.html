@@ -3,1238 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nebula Editor | AI видеоредактор</title>
+    <title>Nebula Editor - AI видеоредактор</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --secondary: #36D1DC;
-            --accent: #FF6B6B;
-            --dark: #0F0F2D;
-            --darker: #0A0A1F;
-            --light: #F8F9FA;
-            --gray: #8A8AA3;
-            --success: #4ECDC4;
-            --warning: #FFD166;
-            --card-bg: rgba(20, 22, 53, 0.6);
-            --card-border: rgba(108, 99, 255, 0.3);
-            --btn-bg: rgba(108, 99, 255, 0.15);
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            color: var(--light);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .nebula-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(108, 99, 255, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(54, 209, 220, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 40%);
-        }
-
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            overflow: hidden;
-        }
-
-        .nebula-1, .nebula-2, .nebula-3 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.4;
-        }
-
-        .nebula-1 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(108, 99, 255, 0.4) 0%, transparent 70%);
-            top: 10%;
-            left: 10%;
-            animation: float-1 25s infinite ease-in-out;
-        }
-
-        .nebula-2 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(54, 209, 220, 0.3) 0%, transparent 70%);
-            top: 60%;
-            left: 70%;
-            animation: float-2 30s infinite ease-in-out;
-        }
-
-        .nebula-3 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 107, 107, 0.3) 0%, transparent 70%);
-            top: 30%;
-            left: 80%;
-            animation: float-3 20s infinite ease-in-out;
-        }
-
-        @keyframes float-1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(50px, -30px) scale(1.05); }
-            50% { transform: translate(-20px, 40px) scale(0.95); }
-            75% { transform: translate(-40px, -20px) scale(1.02); }
-        }
-
-        @keyframes float-2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(-60px, 20px) scale(1.1); }
-            66% { transform: translate(30px, -40px) scale(0.9); }
-        }
-
-        @keyframes float-3 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-30px, 50px) scale(1.07); }
-        }
-
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: twinkle 5s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            padding: 60px 0 40px;
-            position: relative;
-        }
-
-        .logo {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .tagline {
-            font-size: 1.3rem;
-            color: var(--gray);
-            margin-bottom: 30px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        @media (max-width: 1100px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--card-border);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0);
-            transition: transform 0.5s ease;
-        }
-
-        .panel:hover::before {
-            transform: scaleX(1);
-        }
-
-        .panel:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .panel-title {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: var(--light);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-        }
-
-        .panel-title i {
-            font-size: 1.8rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 18px;
-        }
-
-        .btn {
-            background: var(--btn-bg);
-            color: white;
-            border: 1px solid var(--card-border);
-            padding: 18px 15px;
-            border-radius: 15px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.7s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.2);
-            background: rgba(108, 99, 255, 0.25);
-        }
-
-        .btn:active {
-            transform: translateY(-2px);
-        }
-
-        .btn i {
-            font-size: 1.8rem;
-        }
-
-        .btn-quality {
-            border-color: rgba(78, 205, 196, 0.3);
-        }
-
-        .btn-quality:hover {
-            border-color: var(--success);
-            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.2);
-            background: rgba(78, 205, 196, 0.15);
-        }
-
-        .btn-ai {
-            border-color: rgba(142, 45, 226, 0.3);
-        }
-
-        .btn-ai:hover {
-            border-color: #8E2DE2;
-            box-shadow: 0 10px 25px rgba(142, 45, 226, 0.2);
-            background: rgba(142, 45, 226, 0.15);
-        }
-
-        .btn-algorithm {
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        .btn-algorithm:hover {
-            border-color: var(--accent);
-            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.2);
-            background: rgba(255, 107, 107, 0.15);
-        }
-
-        .upload-area {
-            border: 2px dashed var(--card-border);
-            border-radius: 20px;
-            padding: 50px 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            margin-top: 20px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(108, 99, 255, 0.05);
-            transform: translateY(-5px);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: var(--primary);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .upload-text {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .upload-hint {
-            color: var(--gray);
-            font-size: 1rem;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .processing {
-            display: none;
-            text-align: center;
-            padding: 50px 30px;
-            border-radius: 20px;
-            background: var(--card-bg);
-            margin-top: 20px;
-        }
-
-        .spinner {
-            width: 80px;
-            height: 80px;
-            border: 5px solid rgba(108, 99, 255, 0.3);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-            margin: 0 auto 25px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result {
-            display: none;
-            text-align: center;
-            padding: 50px 30px;
-            border-radius: 20px;
-            background: var(--card-bg);
-            margin-top: 20px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-success {
-            color: var(--success);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .download-btn {
-            background: linear-gradient(135deg, var(--success) 0%, #36B1A8 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-            font-weight: 500;
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
-        }
-
-        .download-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 50px;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--gray);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            padding: 12px 20px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .social-link:hover {
-            color: var(--primary);
-            background: rgba(108, 99, 255, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .ad-container {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 40px 0;
-            text-align: center;
-            border: 1px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ad-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-        }
-
-        .ad-title {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: var(--light);
-        }
-
-        .ad-text {
-            color: var(--gray);
-            margin-bottom: 20px;
-            line-height: 1.6;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .ad-btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .ad-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(108, 99, 255, 0.4);
-        }
-
-        .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            padding: 20px 25px;
-            border-radius: 15px;
-            background: var(--card-bg);
-            border-left: 5px solid var(--primary);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transform: translateX(150%);
-            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            z-index: 1000;
-            max-width: 350px;
-            backdrop-filter: blur(10px);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-success {
-            border-left-color: var(--success);
-        }
-
-        .notification-error {
-            border-left-color: var(--accent);
-        }
-
-        .mode-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(108, 99, 255, 0.15);
-            font-size: 0.95rem;
-            margin-left: 15px;
-            border: 1px solid var(--card-border);
-        }
-
-        .floating-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(108, 99, 255, 0.3);
-            border-radius: 50%;
-            animation: float-particle 15s infinite linear;
-        }
-
-        @keyframes float-particle {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-        }
-
-        .btn-active {
-            box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.5) !important;
-            transform: translateY(-5px);
-            background: rgba(108, 99, 255, 0.25) !important;
-        }
-
-        .stats-panel {
-            grid-column: 1 / -1;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .stats-content {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 25px;
-        }
-
-        .stats-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            min-width: 170px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .stats-item:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .stats-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stats-label {
-            font-size: 0.95rem;
-            color: var(--gray);
-            text-align: center;
-        }
-
-        .toggle-stats {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            color: var(--gray);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-
-        .toggle-stats:hover {
-            background: rgba(108, 99, 255, 0.1);
-            color: var(--light);
-        }
-
-        .server-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            border-radius: 15px;
-            background: rgba(78, 205, 196, 0.15);
-            font-size: 0.85rem;
-            margin-left: 10px;
-            border: 1px solid rgba(78, 205, 196, 0.3);
-        }
-
-        .server-status.offline {
-            background: rgba(255, 107, 107, 0.15);
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-    </style>
 </head>
 <body>
-    <div class="nebula-bg"></div>
-    <div class="animated-bg">
-        <div class="nebula-1"></div>
-        <div class="nebula-2"></div>
-        <div class="nebula-3"></div>
-    </div>
-    <div class="stars" id="stars"></div>
-    <div class="floating-particles" id="particles"></div>
-
+    <!-- Анимированный космический фон -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    <div class="nebulae"></div>
+    
+    <!-- Основной контейнер -->
     <div class="container">
-        <header>
-            <div class="logo">NEBULA EDITOR</div>
-            <div class="tagline">Профессиональная обработка видео с использованием нейросетей и передовых алгоритмов. Преобразуйте ваши видео в качественный контент для социальных сетей.</div>
+        <!-- Заголовок -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-stars"></i>
+                <h1>Nebula Editor</h1>
+            </div>
+            <p class="tagline">Космический видеоредактор нового поколения</p>
         </header>
 
-        <div class="main-content">
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-expand-alt"></i>
-                    ФОРМАТЫ ВИДЕО
-                </div>
-                <div class="button-grid">
-                    <button class="btn" data-command="1x1">
-                        <i class="fas fa-square"></i>
-                        1:1 Квадрат
-                    </button>
-                    <button class="btn" data-command="9x16">
-                        <i class="fas fa-mobile-alt"></i>
-                        9:16 Вертикальный
-                    </button>
-                    <button class="btn" data-command="16x9">
-                        <i class="fas fa-desktop"></i>
-                        16:9 Горизонтальный
-                    </button>
-                    <button class="btn" data-command="4x5">
-                        <i class="fas fa-tablet-alt"></i>
-                        4:5 Instagram
-                    </button>
-                    <button class="btn" data-command="1x2">
-                        <i class="fas fa-arrows-alt-v"></i>
-                        1:2 Высокий
-                    </button>
-                    <button class="btn" data-command="2x1">
-                        <i class="fas fa-arrows-alt-h"></i>
-                        2:1 Широкий
-                    </button>
-                    <button class="btn" data-command="21x9">
-                        <i class="fas fa-film"></i>
-                        21:9 Кинематографичный
-                    </button>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-gem"></i>
-                    РЕЖИМЫ КАЧЕСТВА
-                </div>
-                <div class="button-grid">
-                    <button class="btn btn-quality" data-command="quality_lossless">
-                        <i class="fas fa-gem"></i>
-                        Без сжатия
-                    </button>
-                    <button class="btn btn-quality" data-command="quality_compressed">
-                        <i class="fas fa-compress-alt"></i>
-                        Сбалансированный
-                    </button>
-                    <button class="btn btn-quality" data-command="quality_ai">
-                        <i class="fas fa-robot"></i>
-                        ИИ-улучшение
-                    </button>
-                    <button class="btn btn-quality" data-command="quality_no_ai">
-                        <i class="fas fa-ban"></i>
-                        Без ИИ
-                    </button>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-brain"></i>
-                    ИИ-УЛУЧШЕНИЯ
-                </div>
-                <div class="button-grid">
-                    <button class="btn btn-ai" data-command="ai_enhance">
-                        <i class="fas fa-magic"></i>
-                        Улучшение качества
-                    </button>
-                    <button class="btn btn-ai" data-command="ai_interpolate">
-                        <i class="fas fa-forward"></i>
-                        Интерполяция кадров
-                    </button>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">
-                    <i class="fas fa-rocket"></i>
-                    АЛГОРИТМИЧЕСКИЕ УЛУЧШЕНИЯ
-                </div>
-                <div class="button-grid">
-                    <button class="btn btn-algorithm" data-command="enhance_4k">
-                        <i class="fas fa-tv"></i>
-                        Улучшение до 4K
-                    </button>
-                    <button class="btn btn-algorithm" data-command="interpolate_120fps">
-                        <i class="fas fa-tachometer-alt"></i>
-                        120 FPS
-                    </button>
-                </div>
-            </div>
-
-            <div class="panel stats-panel" id="statsPanel">
-                <div class="panel-title">
-                    <i class="fas fa-chart-bar"></i>
-                    СТАТИСТИКА СИСТЕМЫ
-                    <span class="server-status" id="serverStatus">
-                        <i class="fas fa-circle"></i> Сервер онлайн
-                    </span>
-                </div>
-                <div class="stats-content">
-                    <div class="stats-item">
-                        <div class="stats-value" id="active-users">0</div>
-                        <div class="stats-label">Активных сессий</div>
-                    </div>
-                    <div class="stats-item">
-                        <div class="stats-value" id="processed-videos">0</div>
-                        <div class="stats-label">Обработано видео</div>
-                    </div>
-                    <div class="stats-item">
-                        <div class="stats-value" id="ai-enhanced">0</div>
-                        <div class="stats-label">ИИ-улучшений</div>
-                    </div>
-                    <div class="stats-item">
-                        <div class="stats-value" id="lossless-processed">0</div>
-                        <div class="stats-label">Без сжатия</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">
-                <i class="fas fa-cloud-upload-alt"></i>
-                ЗАГРУЗКА ВИДЕО
-                <span class="mode-indicator" id="current-mode">
-                    <i class="fas fa-expand-alt"></i> Ожидание выбора формата
-                </span>
-            </div>
-            
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
+        <!-- Главный экран -->
+        <main class="main-content">
+            <!-- Панель загрузки -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Загрузите видео</h3>
+                    <p>Перетащите файл сюда или нажмите для выбора</p>
+                    <input type="file" id="fileInput" accept="video/*" hidden>
+                    <button class="btn-primary" id="selectFileBtn">Выбрать файл</button>
                 </div>
-                <div class="upload-text">Перетащите видео сюда или нажмите для загрузки</div>
-                <div class="upload-hint">Поддерживаются MP4, MOV, AVI (до 500 МБ)</div>
-                <input type="file" id="fileInput" accept="video/*">
-            </div>
-
-            <div class="processing" id="processing">
-                <div class="spinner"></div>
-                <div class="upload-text">Обработка видео...</div>
-                <div class="upload-hint" id="processing-details">Это может занять несколько минут</div>
-            </div>
-
-            <div class="result" id="result">
-                <div class="result-success">
-                    <i class="fas fa-check-circle"></i> Обработка завершена!
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <div class="file-details">
+                        <i class="fas fa-file-video"></i>
+                        <div class="file-text">
+                            <h4 id="fileName">video.mp4</h4>
+                            <p id="fileSize">0 MB</p>
+                        </div>
+                        <button class="btn-remove" id="removeFileBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="video-preview" id="videoPreview"></div>
                 </div>
-                <div class="upload-text" id="result-details">Видео успешно обработано</div>
-                <button class="download-btn" id="downloadBtn">
-                    <i class="fas fa-download"></i> Скачать результат
-                </button>
-            </div>
+            </section>
 
-            <div style="text-align: center;">
-                <button class="toggle-stats" id="toggleStats">
-                    <i class="fas fa-chart-bar"></i> Показать статистику
-                </button>
-            </div>
-        </div>
+            <!-- Панель настроек -->
+            <section class="settings-section" id="settingsSection" style="display: none;">
+                <h2>Настройки обработки</h2>
+                
+                <!-- Режимы качества -->
+                <div class="settings-group">
+                    <h3>Режим качества</h3>
+                    <div class="quality-buttons">
+                        <button class="quality-btn active" data-quality="lossless">
+                            <i class="fas fa-gem"></i>
+                            <span>Без сжатия</span>
+                            <small>Максимальное качество</small>
+                        </button>
+                        <button class="quality-btn" data-quality="compressed">
+                            <i class="fas fa-compress-alt"></i>
+                            <span>Сжатие</span>
+                            <small>Оптимальный баланс</small>
+                        </button>
+                        <button class="quality-btn" data-quality="ai_enhanced">
+                            <i class="fas fa-robot"></i>
+                            <span>ИИ-улучшение</span>
+                            <small>Нейросети</small>
+                        </button>
+                    </div>
+                </div>
 
-        <div class="ad-container">
-            <div class="ad-title">Нужен такой же сайт, бот или скрипт?</div>
-            <div class="ad-text">Мы создаем индивидуальные решения для обработки медиа с использованием нейросетей и современных технологий. Свяжитесь с нами для обсуждения вашего проекта.</div>
-            <a href="https://t.me/glitch_qzq" target="_blank" class="ad-btn">
-                <i class="fab fa-telegram"></i> Написать в Telegram
-            </a>
-        </div>
+                <!-- Форматы -->
+                <div class="settings-group">
+                    <h3>Формат видео</h3>
+                    <div class="format-buttons">
+                        <button class="format-btn active" data-format="1x1">
+                            <span>1:1</span>
+                            <small>1080×1080</small>
+                        </button>
+                        <button class="format-btn" data-format="9x16">
+                            <span>9:16</span>
+                            <small>1080×1920</small>
+                        </button>
+                        <button class="format-btn" data-format="16x9">
+                            <span>16:9</span>
+                            <small>1920×1080</small>
+                        </button>
+                        <button class="format-btn" data-format="4x5">
+                            <span>4:5</span>
+                            <small>1080×1350</small>
+                        </button>
+                        <button class="format-btn" data-format="1x2">
+                            <span>1:2</span>
+                            <small>1080×2160</small>
+                        </button>
+                        <button class="format-btn" data-format="2x1">
+                            <span>2:1</span>
+                            <small>2160×1080</small>
+                        </button>
+                        <button class="format-btn" data-format="21x9">
+                            <span>21:9</span>
+                            <small>2560×1080</small>
+                        </button>
+                    </div>
+                </div>
 
-        <footer>
-            <div class="social-links">
-                <a href="https://t.me/glitch_qzq" target="_blank" class="social-link">
-                    <i class="fab fa-telegram"></i> Заказать разработку
-                </a>
-                <a href="https://t.me/Script_Releases" target="_blank" class="social-link">
-                    <i class="fab fa-telegram"></i> Канал с релизами
-                </a>
-                <a href="#" class="social-link">
-                    <i class="fas fa-question-circle"></i> Справка
+                <!-- Дополнительные улучшения -->
+                <div class="settings-group">
+                    <h3>Дополнительные улучшения</h3>
+                    <div class="enhancement-buttons">
+                        <button class="enhancement-btn" data-enhancement="4k">
+                            <i class="fas fa-expand-alt"></i>
+                            <span>4K Enhance</span>
+                            <small>Улучшение до 4K</small>
+                        </button>
+                        <button class="enhancement-btn" data-enhancement="120fps">
+                            <i class="fas fa-forward"></i>
+                            <span>120 FPS</span>
+                            <small>Интерполяция кадров</small>
+                        </button>
+                        <button class="enhancement-btn" data-enhancement="ai_enhance">
+                            <i class="fas fa-brain"></i>
+                            <span>AI Enhance</span>
+                            <small>Нейросетевые алгоритмы</small>
+                        </button>
+                        <button class="enhancement-btn" data-enhancement="ai_interpolate">
+                            <i class="fas fa-bolt"></i>
+                            <span>AI Interpolate</span>
+                            <small>ИИ-интерполяция</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Кнопка обработки -->
+                <div class="process-section">
+                    <button class="btn-process" id="processBtn">
+                        <i class="fas fa-rocket"></i>
+                        <span>Запустить обработку</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Прогресс обработки -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <h2>Обработка видео</h2>
+                        <div class="progress-stats">
+                            <span id="progressPercent">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <p id="progressStatus">Подготовка к обработке...</p>
+                        <p id="progressDetails">Ожидание запуска...</p>
+                    </div>
+                    <div class="progress-animation">
+                        <div class="spaceship">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="stars-animated"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Результат -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <div class="result-container">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h2>Обработка завершена!</h2>
+                    </div>
+                    <div class="result-content">
+                        <div class="result-video" id="resultVideo"></div>
+                        <div class="result-info">
+                            <h3>Информация о видео</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Размер:</span>
+                                    <span class="info-value" id="resultSize">0 MB</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Разрешение:</span>
+                                    <span class="info-value" id="resultResolution">0x0</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Длительность:</span>
+                                    <span class="info-value" id="resultDuration">0s</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Формат:</span>
+                                    <span class="info-value" id="resultFormat">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <button class="btn-download" id="downloadBtn">
+                            <i class="fas fa-download"></i>
+                            Скачать результат
+                        </button>
+                        <button class="btn-new" id="newProcessBtn">
+                            <i class="fas fa-redo"></i>
+                            Новое видео
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Реклама -->
+        <aside class="advertisement">
+            <div class="ad-card">
+                <h3>Хотите такой же сайт?</h3>
+                <p>Закажите разработку у нас!</p>
+                <a href="https://t.me/glitch_qzq" class="btn-telegram" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Написать в Telegram
                 </a>
             </div>
-            <div class="tagline">© 2025 Nebula Editor. Все права защищены. Использование нейросетей Real-ESRGAN и RIFE.</div>
+            <div class="ad-card">
+                <h3>Новые релизы</h3>
+                <p>Следите за обновлениями</p>
+                <a href="https://t.me/Script_Releases" class="btn-channel" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Наш канал
+                </a>
+            </div>
+        </aside>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>&copy; © 2025 Nebula Editor. Все права защищены.</p>
         </footer>
     </div>
 
-    <div class="notification" id="notification">
-        <div id="notification-text">Сообщение</div>
-    </div>
-
-    <script>
-        // Конфигурация сервера
-        const SERVER_URL = 'https://7c65c27ded9934811163d4648a95b731.serveo.net'; // URL вашего сервера
-        
-        // Создание звездного фона
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const starsCount = 200;
-            
-            for (let i = 0; i < starsCount; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                
-                // Случайный размер и позиция
-                const size = Math.random() * 2 + 1;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                
-                // Случайная задержка анимации
-                star.style.animationDelay = `${Math.random() * 5}s`;
-                star.style.animationDuration = `${3 + Math.random() * 7}s`;
-                
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // Создание плавающих частиц
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particlesCount = 30;
-            
-            for (let i = 0; i < particlesCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Случайный размер и позиция
-                const size = Math.random() * 6 + 2;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${Math.random() * 100}%`;
-                
-                // Случайная задержка и продолжительность анимации
-                particle.style.animationDelay = `${Math.random() * 15}s`;
-                particle.style.animationDuration = `${10 + Math.random() * 20}s`;
-                
-                // Случайный цвет
-                const colors = [
-                    'rgba(108, 99, 255, 0.4)',
-                    'rgba(54, 209, 220, 0.4)',
-                    'rgba(255, 107, 107, 0.4)',
-                    'rgba(78, 205, 196, 0.4)'
-                ];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
-                particlesContainer.appendChild(particle);
-            }
-        }
-
-        // Уведомления
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notification-text');
-            
-            notificationText.textContent = message;
-            notification.className = 'notification';
-            notification.classList.add('show');
-            
-            if (type === 'success') {
-                notification.classList.add('notification-success');
-            } else if (type === 'error') {
-                notification.classList.add('notification-error');
-            }
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
-        }
-
-        // Проверка статуса сервера
-        async function checkServerStatus() {
-            try {
-                const response = await fetch(`${SERVER_URL}/stats`);
-                if (response.ok) {
-                    document.getElementById('serverStatus').className = 'server-status';
-                    document.getElementById('serverStatus').innerHTML = '<i class="fas fa-circle"></i> Сервер онлайн';
-                    return true;
-                }
-            } catch (error) {
-                console.error('Сервер недоступен:', error);
-                document.getElementById('serverStatus').className = 'server-status offline';
-                document.getElementById('serverStatus').innerHTML = '<i class="fas fa-circle"></i> Сервер офлайн';
-                return false;
-            }
-        }
-
-        // Обновление статистики с сервера
-        async function updateStats() {
-            try {
-                const response = await fetch(`${SERVER_URL}/stats`);
-                if (response.ok) {
-                    const stats = await response.json();
-                    
-                    document.getElementById('active-users').textContent = stats.active_users;
-                    document.getElementById('processed-videos').textContent = stats.processed_videos.toLocaleString();
-                    document.getElementById('ai-enhanced').textContent = stats.ai_enhanced;
-                    document.getElementById('lossless-processed').textContent = stats.lossless_processed;
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки статистики:', error);
-                // Используем локальные данные если сервер недоступен
-                document.getElementById('active-users').textContent = Math.floor(Math.random() * 50) + 120;
-                document.getElementById('processed-videos').textContent = (Math.floor(Math.random() * 500) + 2700).toLocaleString();
-                document.getElementById('ai-enhanced').textContent = Math.floor(Math.random() * 100) + 850;
-                document.getElementById('lossless-processed').textContent = Math.floor(Math.random() * 200) + 1100;
-            }
-        }
-
-        // Обработка команд
-        let currentCommand = null;
-        let currentMode = 'Ожидание выбора формата';
-        let currentModeIcon = 'fas fa-expand-alt';
-
-        function setCommand(command, modeName, modeIcon) {
-            currentCommand = command;
-            currentMode = modeName;
-            currentModeIcon = modeIcon;
-            
-            // Убираем активный класс со всех кнопок
-            document.querySelectorAll('.btn').forEach(btn => {
-                btn.classList.remove('btn-active');
-            });
-            
-            // Добавляем активный класс к выбранной кнопке
-            const activeBtn = document.querySelector(`[data-command="${command}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('btn-active');
-            }
-            
-            const modeIndicator = document.getElementById('current-mode');
-            modeIndicator.innerHTML = `<i class="${modeIcon}"></i> ${modeName}`;
-            
-            showNotification(`Режим установлен: ${modeName}`, 'success');
-        }
-
-        // Обработчики кнопок
-        document.querySelectorAll('.btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const command = this.getAttribute('data-command');
-                
-                // Обработка команд растяжки
-                if (['1x1', '9x16', '16x9', '4x5', '1x2', '2x1', '21x9'].includes(command)) {
-                    const formatNames = {
-                        '1x1': '1:1 Квадрат (1080x1080)',
-                        '9x16': '9:16 Вертикальный (1080x1920)',
-                        '16x9': '16:9 Горизонтальный (1920x1080)',
-                        '4x5': '4:5 Instagram (1080x1350)',
-                        '1x2': '1:2 Высокий (1080x2160)',
-                        '2x1': '2:1 Широкий (2160x1080)',
-                        '21x9': '21:9 Кинематографичный (2560x1080)'
-                    };
-                    
-                    setCommand(command, formatNames[command], 'fas fa-expand-alt');
-                }
-                
-                // Обработка команд качества
-                else if (command === 'quality_lossless') {
-                    setCommand(command, 'Без сжатия (максимальное качество)', 'fas fa-gem');
-                } else if (command === 'quality_compressed') {
-                    setCommand(command, 'Сбалансированный (оптимальное качество/размер)', 'fas fa-compress-alt');
-                } else if (command === 'quality_ai') {
-                    setCommand(command, 'ИИ-улучшение + растяжка', 'fas fa-robot');
-                } else if (command === 'quality_no_ai') {
-                    setCommand(command, 'Без ИИ в растяжке', 'fas fa-ban');
-                }
-                
-                // Обработка ИИ-улучшений
-                else if (command === 'ai_enhance') {
-                    setCommand(command, 'ИИ улучшение качества', 'fas fa-magic');
-                } else if (command === 'ai_interpolate') {
-                    setCommand(command, 'ИИ интерполяция кадров', 'fas fa-forward');
-                }
-                
-                // Обработка алгоритмических улучшений
-                else if (command === 'enhance_4k') {
-                    setCommand(command, 'Улучшение до 4K', 'fas fa-tv');
-                } else if (command === 'interpolate_120fps') {
-                    setCommand(command, 'Интерполяция до 120FPS', 'fas fa-tachometer-alt');
-                }
-            });
-        });
-
-        // Обработка загрузки файлов
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const processing = document.getElementById('processing');
-        const result = document.getElementById('result');
-        const processingDetails = document.getElementById('processing-details');
-        const resultDetails = document.getElementById('result-details');
-        const downloadBtn = document.getElementById('downloadBtn');
-
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'var(--primary)';
-            uploadArea.style.background = 'rgba(108, 99, 255, 0.08)';
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = 'var(--card-border)';
-            uploadArea.style.background = 'rgba(255, 255, 255, 0.03)';
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'var(--card-border)';
-            uploadArea.style.background = 'rgba(255, 255, 255, 0.03)';
-            
-            if (e.dataTransfer.files.length) {
-                handleFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        async function handleFile(file) {
-            if (!currentCommand) {
-                showNotification('Сначала выберите режим обработки!', 'error');
-                return;
-            }
-
-            // Проверка типа файла
-            const fileType = file.type;
-            if (!fileType.startsWith('video/')) {
-                showNotification('Пожалуйста, загрузите видео файл (MP4, MOV, AVI)', 'error');
-                return;
-            }
-
-            // Проверка размера файла (500 МБ)
-            if (file.size > 500 * 1024 * 1024) {
-                showNotification('Файл слишком большой. Максимальный размер: 500 МБ', 'error');
-                return;
-            }
-
-            // Проверяем доступность сервера
-            const serverOnline = await checkServerStatus();
-            if (!serverOnline) {
-                showNotification('Сервер недоступен. Попробуйте позже.', 'error');
-                return;
-            }
-
-            // Показываем процесс обработки
-            uploadArea.style.display = 'none';
-            processing.style.display = 'block';
-            
-            // Устанавливаем детали обработки в зависимости от команды
-            let details = 'Обработка видео...';
-            let estimatedTime = '1-2 минуты';
-            
-            if (currentCommand.startsWith('ai_') || currentCommand === 'quality_ai') {
-                details = 'ИИ-обработка с помощью нейросетей...';
-                estimatedTime = '5-20 минут';
-            } else if (currentCommand === 'enhance_4k' || currentCommand === 'interpolate_120fps') {
-                details = 'Алгоритмическая обработка...';
-                estimatedTime = '3-10 минут';
-            }
-            
-            processingDetails.textContent = `Это займет ${estimatedTime}`;
-            
-            try {
-                // Отправка файла на сервер
-                const formData = new FormData();
-                formData.append('video', file);
-                formData.append('command', currentCommand);
-                formData.append('quality_mode', 'lossless'); // По умолчанию
-                formData.append('ai_enabled', currentCommand.startsWith('ai_') || currentCommand === 'quality_ai');
-
-                const response = await fetch(`${SERVER_URL}/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const resultData = await response.json();
-
-                if (resultData.success) {
-                    processing.style.display = 'none';
-                    result.style.display = 'block';
-                    
-                    resultDetails.textContent = resultData.message;
-                    
-                    // Настраиваем кнопку скачивания
-                    downloadBtn.onclick = () => {
-                        window.open(`${SERVER_URL}${resultData.download_url}`, '_blank');
-                    };
-                    
-                    // Обновляем статистику
-                    updateStats();
-                    showNotification('Видео успешно обработано!', 'success');
-                } else {
-                    throw new Error(resultData.error || 'Ошибка обработки');
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                processing.style.display = 'none';
-                uploadArea.style.display = 'block';
-                showNotification(`Ошибка: ${error.message}`, 'error');
-            }
-        }
-
-        // Переключение статистики
-        const toggleStats = document.getElementById('toggleStats');
-        const statsPanel = document.getElementById('statsPanel');
-        let statsVisible = false;
-
-        toggleStats.addEventListener('click', () => {
-            statsVisible = !statsVisible;
-            statsPanel.style.display = statsVisible ? 'block' : 'none';
-            toggleStats.innerHTML = statsVisible ? 
-                '<i class="fas fa-chart-bar"></i> Скрыть статистику' : 
-                '<i class="fas fa-chart-bar"></i> Показать статистику';
-        });
-
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            createStars();
-            createParticles();
-            checkServerStatus();
-            updateStats();
-            
-            // Обновляем статистику каждые 30 секунд
-            setInterval(updateStats, 30000);
-            
-            // Проверяем статус сервера каждые 10 секунд
-            setInterval(checkServerStatus, 10000);
-            
-            // Показываем приветственное сообщение
-            setTimeout(() => {
-                showNotification('Добро пожаловать в Nebula Editor! Выберите режим обработки и загрузите видео.', 'success');
-            }, 1000);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
